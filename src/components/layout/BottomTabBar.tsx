@@ -1,17 +1,18 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { AppText } from '../common/AppText';
-import { COLORS, SPACING, ROUNDNESS, SHADOWS } from '../../theme/tokens';
-import { Home, BookOpen, Bookmark } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Home, BookOpen, Bookmark } from 'lucide-react-native';
+import { AppText } from '../common/AppText';
+import { COLORS, SHADOWS } from '../../theme/tokens';
+import { AppNavigation, RootStackParamList } from '../../types/navigation';
 
 export type TabName = 'Home' | 'Feed' | 'Saved';
 
 interface TabConfig {
   name: TabName;
   label: string;
-  screen: string;
-  params?: any;
+  screen: keyof RootStackParamList;
+  params?: Record<string, unknown>;
   Icon: React.ComponentType<{ color: string; size: number }>;
 }
 
@@ -26,7 +27,7 @@ interface BottomTabBarProps {
 }
 
 export const BottomTabBar: React.FC<BottomTabBarProps> = ({ active }) => {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<AppNavigation>();
 
   return (
     <View style={styles.bar}>
@@ -37,14 +38,13 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ active }) => {
           <TouchableOpacity
             key={name}
             style={styles.tab}
-            onPress={() => navigation.navigate(screen, params)}
+            onPress={() => navigation.navigate(screen as any, params as any)}
             activeOpacity={0.7}
           >
             <Icon color={color} size={24} />
             <AppText variant="caption" color={color} style={styles.label}>
               {label}
             </AppText>
-            {isActive && <View style={styles.dot} />}
           </TouchableOpacity>
         );
       })}

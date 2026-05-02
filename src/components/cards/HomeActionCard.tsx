@@ -10,11 +10,8 @@ interface HomeActionCardProps {
   description: string;
   icon: ReactNode;
   onPress: () => void;
-  /** Optional image to show at the top of the card */
   headerImage?: any;
-  /** Use the amber→teal gradient background */
   gradient?: boolean;
-  /** Optional Sanskrit watermark text rendered behind the content */
   decorativeText?: string;
   style?: ViewStyle;
 }
@@ -52,25 +49,14 @@ export const HomeActionCard: React.FC<HomeActionCardProps> = ({
         {description}
       </AppText>
 
-      <CardAccent />
-
-      {/* Decorative corner icon for gradient card as seen in screenshot */}
-      {gradient && (
-        <View style={styles.cornerIconContainer}>
-          <View style={styles.cornerIcon} />
-        </View>
-      )}
+     
     </View>
   );
 
   return (
-    <TouchableOpacity 
-      onPress={onPress} 
-      style={[
-        styles.base, 
-        !gradient && styles.flatCard, 
-        style
-      ]} 
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.base, !gradient && styles.flatCard, style]}
       activeOpacity={0.9}
     >
       {gradient ? (
@@ -142,18 +128,5 @@ const styles = StyleSheet.create({
   description: {
     zIndex: 1,
     opacity: 0.9,
-  },
-  cornerIconContainer: {
-    position: 'absolute',
-    bottom: -15,
-    right: -15,
-    opacity: 0.05,
-  },
-  cornerIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 12,
-    borderColor: COLORS.text,
   },
 });

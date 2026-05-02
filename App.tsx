@@ -11,8 +11,9 @@ import { ChapterBrowserScreen } from './src/screens/ChapterBrowserScreen';
 import { BookmarksScreen } from './src/screens/BookmarksScreen';
 import { SplashScreen } from './src/screens/SplashScreen';
 import { COLORS } from './src/theme/tokens';
+import { RootStackParamList } from './src/types/navigation';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   const [showSplash, setShowSplash] = React.useState(true);
@@ -33,7 +34,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <StatusBar style="dark" />
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator id="root" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Chapters" component={ChapterBrowserScreen} />
         <Stack.Screen name="Bookmarks" component={BookmarksScreen} />
@@ -42,7 +43,6 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
 
 const styles = StyleSheet.create({
   loadingContainer: {
