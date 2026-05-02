@@ -1,18 +1,24 @@
 import React, { useState, useCallback } from 'react';
-import { FlatList, StyleSheet, View, TouchableOpacity } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AppText } from '../components/common/AppText';
-import { COLORS, SPACING, ROUNDNESS } from '../theme/tokens';
+import { ScreenHeader } from '../components/layout/ScreenHeader';
+import { BottomTabBar } from '../components/layout/BottomTabBar';
+import { VerseListItem } from '../components/cards/VerseListItem';
+import { COLORS, SPACING, LAYOUT } from '../theme/tokens';
 import { dbService } from '../services/dbService';
 import { gitaService, Verse } from '../services/gitaService';
-import { ChevronLeft, Trash2 } from 'lucide-react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { AppNavigation } from '../types/navigation';
 
-interface BookmarksScreenProps {
-  navigation: any;
-}
-
-export const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) => {
+export const BookmarksScreen: React.FC = () => {
+  const navigation = useNavigation<AppNavigation>();
   const [bookmarks, setBookmarks] = useState<Verse[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,38 +26,40 @@ export const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) 
     setLoading(true);
     const bookmarkIds = await dbService.getBookmarks();
     const allVerses = gitaService.getAllVerses();
-    const filtered = allVerses.filter(v => bookmarkIds.includes(v.id));
-    setBookmarks(filtered);
+    setBookmarks(allVerses.filter(v => bookmarkIds.includes(v.id)));
     setLoading(false);
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadBookmarks();
-    }, [loadBookmarks])
-  );
+  useFocusEffect(useCallback(() => { loadBookmarks(); }, [loadBookmarks]));
 
   const clearAll = async () => {
-    // Logic to clear all bookmarks could go here
+    const ids = await dbService.getBookmarks();
+    await Promise.all(ids.map(id => dbService.removeBookmark(id)));
+    setBookmarks([]);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <ChevronLeft color={COLORS.primary} size={24} />
-        </TouchableOpacity>
-        <AppText variant="headline" color={COLORS.primary}>
-          Bookmarks
-        </AppText>
-        <View style={{ width: 40 }} />
-      </View>
+    <View style={styles.container}>
+      <SafeAreaView edges={['top']} style={styles.headerArea}>
+        <ScreenHeader
+          title="Bookmarks"
+          onBack={() => navigation.goBack()}
+          right={
+            bookmarks.length > 0 ? (
+              <TouchableOpacity onPress={clearAll}>
+                <AppText variant="label" color={COLORS.error}>CLEAR ALL</AppText>
+              </TouchableOpacity>
+            ) : undefined
+          }
+        />
+      </SafeAreaView>
 
-      {bookmarks.length === 0 && !loading ? (
-        <View style={styles.emptyContainer}>
+      {loading ? (
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      ) : bookmarks.length === 0 ? (
+        <View style={styles.centered}>
           <AppText variant="body" color={COLORS.textMuted} centered>
             You haven't bookmarked any verses yet.
           </AppText>
@@ -59,62 +67,38 @@ export const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) 
       ) : (
         <FlatList
           data={bookmarks}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
           renderItem={({ item }) => (
-            <TouchableOpacity 
+            <VerseListItem
+              verse={item}
               onPress={() => navigation.navigate('Reader', { verseId: item.id })}
-              style={styles.bookmarkItem}
-            >
-              <AppText variant="label" color={COLORS.tertiary}>
-                CH {item.chapter} • VERSE {item.verse}
-              </AppText>
-              <AppText variant="body" numberOfLines={2} style={styles.preview}>
-                {item.english_translation}
-              </AppText>
-            </TouchableOpacity>
+            />
           )}
           contentContainerStyle={styles.listContent}
         />
       )}
-    </SafeAreaView>
+
+      <BottomTabBar active="Saved" />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.outlineVariant,
+  headerArea: {
+    backgroundColor: COLORS.background,
   },
-  backButton: {
-    padding: SPACING.xs,
-  },
-  listContent: {
-    padding: SPACING.lg,
-  },
-  bookmarkItem: {
-    backgroundColor: COLORS.surface,
-    padding: SPACING.md,
-    borderRadius: ROUNDNESS.lg,
-    marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.outlineVariant,
-  },
-  preview: {
-    marginTop: SPACING.xs,
-  },
-  emptyContainer: {
+  centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: SPACING.xl,
+  },
+  listContent: {
+    padding: SPACING.lg,
+    paddingBottom: LAYOUT.tabBarHeight + SPACING.md,
   },
 });

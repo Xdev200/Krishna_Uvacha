@@ -1,25 +1,25 @@
 import React, { useState, useMemo } from 'react';
-import { FlatList, StyleSheet, View, TouchableOpacity, TextInput } from 'react-native';
-import { AppText } from '../components/common/AppText';
-import { COLORS, SPACING, ROUNDNESS } from '../theme/tokens';
-import { ChapterCard } from '../components/cards/ChapterCard';
-import { useGita } from '../hooks/useGita';
-import { ScreenWrapper } from '../components/common/ScreenWrapper';
-import { Search } from 'lucide-react-native';
+import { FlatList, StyleSheet, View, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Search } from 'lucide-react-native';
+import { AppText } from '../components/common/AppText';
+import { ChapterCard } from '../components/cards/ChapterCard';
+import { VerseListItem } from '../components/cards/VerseListItem';
+import { ScreenWrapper } from '../components/common/ScreenWrapper';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
+import { COLORS, SPACING, ROUNDNESS } from '../theme/tokens';
+import { useGita } from '../hooks/useGita';
+import { AppNavigation } from '../types/navigation';
+
+const CHAPTERS = Array.from({ length: 18 }, (_, i) => i + 1);
 
 export const ChapterBrowserScreen: React.FC = () => {
   const { searchVerses } = useGita();
   const [searchQuery, setSearchQuery] = useState('');
-  const navigation = useNavigation<any>();
-  
-  const chapters = Array.from({ length: 18 }, (_, i) => i + 1);
+  const navigation = useNavigation<AppNavigation>();
 
   const searchResults = useMemo(() => {
-    if (searchQuery.length > 2) {
-      return searchVerses(searchQuery);
-    }
+    if (searchQuery.length > 2) return searchVerses(searchQuery);
     return [];
   }, [searchQuery, searchVerses]);
 
@@ -43,37 +43,28 @@ export const ChapterBrowserScreen: React.FC = () => {
       {searchQuery.length > 2 ? (
         <FlatList
           data={searchResults}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
           renderItem={({ item }) => (
-            <TouchableOpacity 
+            <VerseListItem
+              verse={item}
               onPress={() => navigation.navigate('Reader', { verseId: item.id })}
-              style={styles.resultItem}
-            >
-              <AppText variant="label" color={COLORS.tertiary}>
-                CH {item.chapter} • VERSE {item.verse}
-              </AppText>
-              <AppText variant="body" numberOfLines={2} style={styles.preview}>
-                {item.english_translation}
-              </AppText>
-            </TouchableOpacity>
+            />
           )}
           contentContainerStyle={styles.listContent}
           ListHeaderComponent={() => (
             <AppText variant="label" color={COLORS.textMuted} style={styles.resultsLabel}>
-              {searchResults.length} results found for "{searchQuery}"
+              {searchResults.length} results for "{searchQuery}"
             </AppText>
           )}
         />
       ) : (
         <FlatList
-          data={chapters}
-          keyExtractor={(item) => item.toString()}
+          data={CHAPTERS}
+          keyExtractor={item => item.toString()}
           renderItem={({ item }) => (
-            <ChapterCard 
-              number={item} 
-              onPress={() => {
-                navigation.navigate('Reader', { chapter: item });
-              }}
+            <ChapterCard
+              number={item}
+              onPress={() => navigation.navigate('Reader', { chapter: item })}
             />
           )}
           contentContainerStyle={styles.listContent}
@@ -90,23 +81,10 @@ export const ChapterBrowserScreen: React.FC = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: COLORS.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.outlineVariant,
-  },
-  backButton: {
-    padding: SPACING.xs,
   },
   listContent: {
     padding: SPACING.lg,
@@ -134,19 +112,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
     fontSize: 16,
     color: COLORS.text,
-  },
-  resultItem: {
-    backgroundColor: COLORS.surface,
-    padding: SPACING.md,
-    borderRadius: ROUNDNESS.lg,
-    marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.outlineVariant,
-  },
-  preview: {
-    marginTop: SPACING.xs,
-    fontSize: 14,
-    lineHeight: 20,
   },
   resultsLabel: {
     marginBottom: SPACING.md,

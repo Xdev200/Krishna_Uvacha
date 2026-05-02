@@ -6,58 +6,52 @@ import {
   Share,
   FlatList,
   Dimensions,
-  Platform,
-  ScrollView
+  ScrollView,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { ChevronLeft, Share2, Bookmark, Sparkles, Flame } from 'lucide-react-native';
+import { Bookmark, Share2, Sparkles, Flame } from 'lucide-react-native';
 import { AppText } from '../components/common/AppText';
 import { VerseHeroCard } from '../components/common/VerseHeroCard';
 import { BottomTabBar } from '../components/layout/BottomTabBar';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
-import { COLORS, SPACING, ROUNDNESS, FONTS, SHADOWS } from '../theme/tokens';
-import { useGita, useVerse } from '../hooks/useGita';
+import { COLORS, SPACING, ROUNDNESS } from '../theme/tokens';
+import { useGita } from '../hooks/useGita';
+import { useStreak } from '../hooks/useStreak';
 import { dbService } from '../services/dbService';
 import { Verse } from '../services/gitaService';
+import { AppNavigation, ReaderRouteProp } from '../types/navigation';
 
 const { height: WINDOW_HEIGHT } = Dimensions.get('window');
-const HEADER_HEIGHT = 60;
-const TAB_BAR_HEIGHT = 80;
 
 interface ReaderScreenProps {
-  route: {
-    params: {
-      verseId?: string;
-      isShuffle?: boolean;
-      chapter?: number;
-    };
-  };
+  route: ReaderRouteProp;
 }
 
 type Lang = 'en' | 'hi';
 
-const VerseItem = ({ 
-  verse, 
-  lang, 
-  isBookmarked, 
-  onToggleBookmark, 
+const VerseItem = ({
+  verse,
+  lang,
+  isBookmarked,
+  onToggleBookmark,
   onShare,
-  itemHeight
-}: { 
-  verse: Verse; 
-  lang: Lang; 
-  isBookmarked: boolean; 
-  onToggleBookmark: () => void; 
+  itemHeight,
+}: {
+  verse: Verse;
+  lang: Lang;
+  isBookmarked: boolean;
+  onToggleBookmark: () => void;
   onShare: () => void;
   itemHeight: number;
 }) => {
   const translation = lang === 'en' ? verse.english_translation : verse.hindi_translation;
-  
+
   return (
     <View style={[styles.verseItem, { height: itemHeight }]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.verseItemContent}>
-        {/* Verse hero card */}
         <VerseHeroCard
           sanskrit={verse.sanskrit}
           // transliteration={verse.transliteration}
@@ -65,12 +59,11 @@ const VerseItem = ({
           verse={verse.verse}
         />
 
-        {/* Interpretation section */}
         <View style={styles.body}>
           <View style={styles.interpretationHeader}>
             <View style={styles.interpretationTitle}>
               <Sparkles color={COLORS.sanskrit} size={20} />
-              <AppText variant="headline" color={COLORS.primary} style={styles.interpretationLabel}>
+              <AppText variant="headline" color={COLORS.primary}>
                 Interpretation
               </AppText>
             </View>
@@ -88,13 +81,15 @@ const VerseItem = ({
             </View>
           </View>
 
-          {/* Quote block */}
           <View style={styles.quoteBlock}>
-            <AppText variant="body" style={styles.quoteText}>
-              "{translation}"
-            </AppText>
+            <AppText variant="body">"{translation}"</AppText>
           </View>
 
+          {/* {verse.word_meanings ? (
+            <AppText variant="caption" color={COLORS.textMuted} style={styles.wordMeanings}>
+              {verse.word_meanings}
+            </AppText>
+          ) : null} */}
         </View>
       </ScrollView>
     </View>
@@ -102,19 +97,17 @@ const VerseItem = ({
 };
 
 export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
-  const { verseId, isShuffle, chapter } = route.params;
-  const insets = useSafeAreaInsets();
-  const navigation = useNavigation<any>();
+  const { verseId, isShuffle, chapter } = route.params ?? {};
+  const navigation = useNavigation<AppNavigation>();
   const { getAllVerses, getRandomVerses, getVersesByChapter, getChapterName } = useGita();
+  const streak = useStreak();
   const [lang, setLang] = useState<Lang>('en');
   const [verses, setVerses] = useState<Verse[]>([]);
   const [bookmarks, setBookmarks] = useState<Record<string, boolean>>({});
-  
-  const [listHeight, setListHeight] = useState(WINDOW_HEIGHT - 200); // Fallback
-  
-  const itemHeight = listHeight;
+  const [listHeight, setListHeight] = useState(WINDOW_HEIGHT - 200);
 
-  const headerTitle = chapter ? getChapterName(chapter) : "Krishna Uvaach";
+  const itemHeight = listHeight;
+  const chapterName = chapter ? getChapterName(chapter) : undefined;
 
   React.useEffect(() => {
     let initialVerses: Verse[] = [];
@@ -124,29 +117,23 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
       const random = getRandomVerses(100);
       if (verseId) {
         const firstVerse = getAllVerses().find(v => v.id === verseId);
-        if (firstVerse) {
-          initialVerses = [firstVerse, ...random.filter(v => v.id !== verseId)];
-        } else {
-          initialVerses = random;
-        }
+        initialVerses = firstVerse
+          ? [firstVerse, ...random.filter(v => v.id !== verseId)]
+          : random;
       } else {
         initialVerses = random;
       }
     } else if (verseId) {
       const all = getAllVerses();
       const startIndex = all.findIndex(v => v.id === verseId);
-      if (startIndex !== -1) {
-        initialVerses = all.slice(startIndex);
-      }
+      if (startIndex !== -1) initialVerses = all.slice(startIndex);
     } else {
       initialVerses = getAllVerses();
     }
     setVerses(initialVerses);
 
-    // Initial bookmarks
-    initialVerses.forEach(async (v) => {
-      const bookmarked = await dbService.isBookmarked(v.id);
-      setBookmarks(prev => ({ ...prev, [v.id]: bookmarked }));
+    dbService.getBookmarks().then(ids => {
+      setBookmarks(Object.fromEntries(ids.map(id => [id, true])));
     });
   }, [verseId, isShuffle, chapter]);
 
@@ -168,7 +155,7 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
     } catch {}
   };
 
-  const onMomentumScrollEnd = (event: any) => {
+  const onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const index = Math.round(event.nativeEvent.contentOffset.y / itemHeight);
     if (verses[index]) {
       dbService.addToHistory(verses[index].id);
@@ -179,8 +166,8 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
     <View style={styles.safe}>
       <SafeAreaView edges={['top']} style={styles.headerContainer}>
         <ScreenHeader
-          title={chapter ? `Chapter ${chapter}` : "Krishna Uvaach"}
-          subtitle={chapter ? getChapterName(chapter) : undefined}
+          title={chapter ? `Chapter ${chapter}` : 'Krishna Uvaach'}
+          subtitle={chapterName}
           onBack={() => navigation.goBack()}
           right={
             <View style={styles.headerRight}>
@@ -194,7 +181,6 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
                     <AppText
                       variant="caption"
                       color={lang === l ? COLORS.surface : COLORS.primary}
-                      style={styles.langLabel}
                     >
                       {l.toUpperCase()}
                     </AppText>
@@ -203,8 +189,8 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
               </View>
 
               <View style={styles.streakContainer}>
-                <AppText variant="caption" color={COLORS.primary} style={styles.streakText}>
-                  7
+                <AppText variant="caption" color={COLORS.primary}>
+                  {streak}
                 </AppText>
                 <Flame color={COLORS.primary} size={16} fill={COLORS.primary} />
               </View>
@@ -213,14 +199,14 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
         />
       </SafeAreaView>
 
-      <View style={{ flex: 1 }} onLayout={(e) => setListHeight(e.nativeEvent.layout.height)}>
+      <View style={styles.listContainer} onLayout={e => setListHeight(e.nativeEvent.layout.height)}>
         <FlatList
           data={verses}
           keyExtractor={item => item.id}
           pagingEnabled
           showsVerticalScrollIndicator={false}
           onMomentumScrollEnd={onMomentumScrollEnd}
-          removeClippedSubviews={true}
+          removeClippedSubviews
           initialNumToRender={3}
           maxToRenderPerBatch={3}
           windowSize={5}
@@ -253,17 +239,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: COLORS.background,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    justifyContent: 'space-between',
-  },
-  backBtn: {
-    marginRight: SPACING.xs,
-  },
-  headerTitle: {
+  listContainer: {
     flex: 1,
   },
   headerRight: {
@@ -287,22 +263,10 @@ const styles = StyleSheet.create({
   langPillActive: {
     backgroundColor: COLORS.primary,
   },
-  langLabel: {
-    // Basic styles handled by 'caption' variant
-  },
   streakContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-  },
-  streakText: {
-    // Basic styles handled by 'caption' variant
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 100, // Account for bottom tab bar
   },
   verseItem: {
     width: '100%',
@@ -312,7 +276,6 @@ const styles = StyleSheet.create({
   },
   body: {
     padding: SPACING.lg,
-    paddingBottom: SPACING.lg,
   },
   interpretationHeader: {
     flexDirection: 'row',
@@ -324,9 +287,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-  },
-  interpretationLabel: {
-    // Basic styles handled by 'headline' variant
   },
   bodyActions: {
     flexDirection: 'row',
@@ -342,7 +302,8 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
     marginBottom: SPACING.lg,
   },
-  quoteText: {
-    // Basic styles handled by 'body' variant
+  wordMeanings: {
+    lineHeight: 18,
+    opacity: 0.7,
   },
 });

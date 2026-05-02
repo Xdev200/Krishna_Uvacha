@@ -62,3 +62,5 @@
 - [x] 9.1 Implement two-line header for chapter-wise screens (Chapter Number + Name)
 - [x] 9.2 Standardize ScreenHeader component across all screens for consistency
 - [x] 9.3 Remove legacy ShlokaCard and FeedScreen components
+- [x] 9.4 Generate and integrate premium header images for Shuffle Shlok and Browse Chapters (160px height)
+- [x] 9.5 Safe migration from App.js to App.tsx (Remove App.js, utilize App.tsx as entry point)

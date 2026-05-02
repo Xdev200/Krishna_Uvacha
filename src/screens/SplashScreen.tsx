@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View, Dimensions, Animated } from 'react-native';
-import { COLORS, SPACING } from '../theme/tokens';
 import { Flower } from 'lucide-react-native';
 import { AppText } from '../components/common/AppText';
+import { COLORS, SPACING } from '../theme/tokens';
 
 const { height } = Dimensions.get('window');
 
@@ -19,17 +19,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   const footerOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onFinish();
-    }, 2500);
+    const timer = setTimeout(onFinish, 2500);
 
-    Animated.loop(
-      Animated.timing(spinValue, {
-        toValue: 1,
-        duration: 1500,
-        useNativeDriver: true,
-      })
-    ).start();
+    const spinLoop = Animated.loop(
+      Animated.timing(spinValue, { toValue: 1, duration: 1500, useNativeDriver: true })
+    );
+    spinLoop.start();
 
     Animated.parallel([
       Animated.timing(logoOpacity, { toValue: 1, duration: 1500, useNativeDriver: true }),
@@ -49,7 +44,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
       Animated.timing(footerOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }),
     ]).start();
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      spinLoop.stop();
+    };
   }, [onFinish]);
 
   const spin = spinValue.interpolate({

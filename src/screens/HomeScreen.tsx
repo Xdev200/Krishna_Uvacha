@@ -1,26 +1,20 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Image,
-} from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Sparkles, BookOpen } from 'lucide-react-native';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { BottomTabBar } from '../components/layout/BottomTabBar';
 import { HomeActionCard } from '../components/cards/HomeActionCard';
-import { GradientView } from '../components/common/GradientView';
-import { COLORS, SPACING, ROUNDNESS } from '../theme/tokens';
+import { COLORS, SPACING, LAYOUT } from '../theme/tokens';
 import { useGita } from '../hooks/useGita';
-
-const BROWSE_WATERMARK =
-  'धर्मक्षेत्रे कुरुक्षेत्रे\nसमवेता युयुत्सवः |\nमामकाः पाण्डवाश्चैव\nकिमकुर्वत सञ्जय';
+import { useStreak } from '../hooks/useStreak';
+import { AppNavigation } from '../types/navigation';
 
 export const HomeScreen: React.FC = () => {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<AppNavigation>();
   const { getRandomVerses } = useGita();
+  const streak = useStreak();
 
   const handleShuffle = () => {
     const [verse] = getRandomVerses(1);
@@ -29,14 +23,13 @@ export const HomeScreen: React.FC = () => {
 
   const handleBrowse = () => navigation.navigate('Chapters');
 
-  // Load hero images
-  const krishnaImage = require('../../assets/krishna.png');
-  const chaptersImage = require('../../assets/chapters.png');
+  const krishnaImage = require('../../assets/shuffle_shlok.png');
+  const chaptersImage = require('../../assets/browse_chapters.png');
 
   return (
     <View style={styles.safe}>
       <SafeAreaView edges={['top']}>
-        <ScreenHeader title="Krishna Uvaach" showStreak streakCount={7} />
+        <ScreenHeader title="Krishna Uvaach" showStreak streakCount={streak} />
       </SafeAreaView>
 
       <ScrollView
@@ -78,7 +71,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: SPACING.xs,
-    paddingBottom: 100, // Account for bottom tab bar
+    paddingBottom: LAYOUT.tabBarHeight + SPACING.xl,
   },
   cards: {
     paddingHorizontal: SPACING.md,
