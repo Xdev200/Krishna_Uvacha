@@ -11,6 +11,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AppText } from '../components/common/AppText';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { BottomTabBar } from '../components/layout/BottomTabBar';
+import { BookmarksBackground } from '../components/common/AnimatedBackground';
 import { VerseListItem } from '../components/cards/VerseListItem';
 import { COLORS, SPACING, LAYOUT } from '../theme/tokens';
 import { dbService } from '../services/dbService';
@@ -40,6 +41,7 @@ export const BookmarksScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <BookmarksBackground />
       <SafeAreaView edges={['top']} style={styles.headerArea}>
         <ScreenHeader
           title="Bookmarks"
@@ -86,10 +88,9 @@ export const BookmarksScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   headerArea: {
-    backgroundColor: COLORS.background,
+    backgroundColor: 'transparent',
   },
   centered: {
     flex: 1,

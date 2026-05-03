@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home, BookOpen, Bookmark } from 'lucide-react-native';
 import { AppText } from '../common/AppText';
 import { COLORS, SHADOWS } from '../../theme/tokens';
@@ -28,9 +29,10 @@ interface BottomTabBarProps {
 
 export const BottomTabBar: React.FC<BottomTabBarProps> = ({ active }) => {
   const navigation = useNavigation<AppNavigation>();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.bar}>
+    <View style={[styles.bar, { paddingBottom: Math.max(insets.bottom, 20), height: 75 + insets.bottom }]}>
       {TABS.map(({ name, label, screen, params, Icon }) => {
         const isActive = name === active;
         const color = isActive ? COLORS.primary : COLORS.textMuted;
@@ -58,7 +60,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderTopWidth: 1,
     borderTopColor: COLORS.outlineVariant,
-    paddingBottom: 25,
     paddingTop: 12,
     position: 'absolute',
     bottom: 0,

@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { ChevronLeft } from 'lucide-react-native';
 import { AppText } from '../common/AppText';
 import { StreakBadge } from '../common/StreakBadge';
-import { COLORS, SPACING } from '../../theme/tokens';
+import { COLORS, SPACING, SHADOWS } from '../../theme/tokens';
 
 interface ScreenHeaderProps {
   title: string;
@@ -28,7 +28,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   left,
   onBack,
 }) => (
-  <View style={styles.row}>
+  <View style={[styles.row, styles.depth]}>
     <View style={styles.leftSection}>
       {onBack && (
         <TouchableOpacity onPress={onBack} style={styles.backBtn}>
@@ -59,7 +59,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.md,
-    paddingBottom: SPACING.sm,
+    paddingBottom: SPACING.md,
+    backgroundColor: 'transparent',
+  },
+  depth: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.surfaceVariant,
+    ...SHADOWS.sm,
   },
   leftSection: {
     flexDirection: 'row',
@@ -73,7 +79,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    // Handled by 'headline' variant
+    letterSpacing: -0.2,
+    fontSize: 22, // Slightly more compact for better fit
   },
   subtitle: {
     marginTop: -2,

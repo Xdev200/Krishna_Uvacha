@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
-const DB_NAME = 'krishna_uvaach.db';
+const DB_NAME = 'krishna_Uvacha.db';
 
 class DBService {
   private db: SQLite.SQLiteDatabase | null = null;

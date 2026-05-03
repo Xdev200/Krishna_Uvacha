@@ -25,7 +25,7 @@ export const ChapterBrowserScreen: React.FC = () => {
 
   return (
     <ScreenWrapper style={styles.safeArea}>
-      <ScreenHeader title="Krishna Uvaach" />
+      <ScreenHeader title="Krishna Uvacha" />
 
       <View style={styles.searchBarContainer}>
         <View style={styles.searchBar}>

@@ -1,8 +1,14 @@
 export const COLORS = {
   // Brand Colors
-  primary: '#FF9933', // Saffron
-  secondary: '#FDF6EC', // Parchment
+  primary: '#C9975A', // Amber Gold (Main Brand)
+  secondary: '#004B57', // Deep Peacock Blue (Secondary Brand)
   tertiary: '#7A4D1F', // Muted Earth
+  
+  // Luxury Palette
+  gold: '#D4AF37',
+  peacockBlue: '#005F6B',
+  parchment: '#FDF6EC',
+  charcoal: '#1A1A1A',
   
   // Functional Colors
   background: '#FCF9F8',
@@ -10,8 +16,9 @@ export const COLORS = {
   surfaceVariant: '#F5EFE7',
   
   // Semantic Colors
-  sanskrit: '#8B4513', // Deep Earth Brown for Shloks
-  accent: '#C9975A', // Amber Gold
+  sanskrit: '#5C3D2E', // Deep Warm Brown for Shloks
+  accent: '#D4AF37', // Gold Accent
+  accentOrange: '#FF9500', // Vibrant Orange for Listen
   success: '#2D6A4F',
   error: '#BA1A1A',
   

@@ -1,4 +1,4 @@
-# Krishna_Uvaach - Implementation Plan (WBS)
+# Krishna_Uvacha - Implementation Plan (WBS)
 
 ## Phase 1: Foundation & Setup
 - [x] 1.1 Project structure initialization
@@ -64,3 +64,32 @@
 - [x] 9.3 Remove legacy ShlokaCard and FeedScreen components
 - [x] 9.4 Generate and integrate premium header images for Shuffle Shlok and Browse Chapters (160px height)
 - [x] 9.5 Safe migration from App.js to App.tsx (Remove App.js, utilize App.tsx as entry point)
+
+## Phase 10: Assets & Branding
+- [x] 10.1 Generate and integrate premium "Clinical Luxury" favicon, app icons, and splash icon
+- [x] 10.2 Create mandatory Play Store text assets (Title, Short/Full Description)
+- [x] 10.3 Create mandatory Play Store graphic assets (Icon, Feature Graphic, Screenshots)
+- [x] 10.4 Create information website with Privacy Policy and Terms of Service
+
+## Phase 11: Audio & Accessibility
+- [x] 11.1 Integrate Text-to-Speech (TTS) for verses and interpretations
+- [x] 11.2 Implement themed SpeakerButton with playback state control
+- [x] 11.3 Add automatic speech termination on scroll for optimized UX
+
+## Phase 12: UI Refinement (Actions Sidebar)
+- [x] 12.1 Implement vertical action sidebar (Listen, Save, Share) on ReaderScreen
+- [x] 12.2 Style actions with circular buttons and serif labels as per visual reference
+- [x] 12.3 Optimize sidebar: shrink icon/circle sizes and vertically center actions (Minimal 36px size)
+- [x] 12.4 Implement Speaker/Mute toggle with autoplay and persistent mute state
+- [x] 12.5 Add screen-aware audio termination to stop TTS when navigating away from ReaderScreen
+- [x] 12.6 Optimize ScreenHeader with depth (shadows) and refined typography
+- [x] 12.7 Adjust BottomTabBar height and padding for better accessibility button clearance
+## Phase 13: Immersive Backgrounds
+- [x] 13.1 Implement light animated full-height background in ReaderScreen
+- [x] 13.2 Design and integrate themed props (Peacock Feather, Lotus, Flute, Om) using SVG and Reanimated
+- [x] 13.3 Transparentize UI layers (Header, Container) to enable full-screen immersion
+- [x] 13.4 Update AnimatedBackground with premium generated image and subtle parallax animation
+- [x] 13.5 Implement premium light background for BookmarksScreen with custom texture and motifs
+
+## Phase 14: Documentation Excellence
+- [x] 14.1 Enhance root and web READMEs with premium branding, banners, and structured content

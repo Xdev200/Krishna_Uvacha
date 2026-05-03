@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,20 +9,25 @@ import {
   ScrollView,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  AppState,
+  AppStateStatus,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Bookmark, Share2, Sparkles, Flame } from 'lucide-react-native';
 import { AppText } from '../components/common/AppText';
 import { VerseHeroCard } from '../components/common/VerseHeroCard';
+import { VerticalActions } from '../components/common/VerticalActions';
 import { BottomTabBar } from '../components/layout/BottomTabBar';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { COLORS, SPACING, ROUNDNESS } from '../theme/tokens';
 import { useGita } from '../hooks/useGita';
 import { useStreak } from '../hooks/useStreak';
 import { dbService } from '../services/dbService';
+import { speechService } from '../services/speechService';
 import { Verse } from '../services/gitaService';
 import { AppNavigation, ReaderRouteProp } from '../types/navigation';
+import { AnimatedBackground } from '../components/common/AnimatedBackground';
 
 const { height: WINDOW_HEIGHT } = Dimensions.get('window');
 
@@ -36,62 +41,62 @@ const VerseItem = ({
   verse,
   lang,
   isBookmarked,
+  isSpeaking,
   onToggleBookmark,
   onShare,
+  onToggleSpeech,
   itemHeight,
 }: {
   verse: Verse;
   lang: Lang;
   isBookmarked: boolean;
+  isSpeaking: boolean;
   onToggleBookmark: () => void;
   onShare: () => void;
+  onToggleSpeech: () => void;
   itemHeight: number;
 }) => {
   const translation = lang === 'en' ? verse.english_translation : verse.hindi_translation;
 
   return (
     <View style={[styles.verseItem, { height: itemHeight }]}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.verseItemContent}>
-        <VerseHeroCard
-          sanskrit={verse.sanskrit}
-          // transliteration={verse.transliteration}
-          chapter={verse.chapter}
-          verse={verse.verse}
+      <View style={styles.verseRow}>
+        <ScrollView 
+          showsVerticalScrollIndicator={false} 
+          contentContainerStyle={styles.verseItemContent}
+          style={styles.verseScroll}
+        >
+          <VerseHeroCard
+            sanskrit={verse.sanskrit}
+            // transliteration={verse.transliteration}
+            chapter={verse.chapter}
+            verse={verse.verse}
+          />
+
+          <View style={styles.body}>
+            <View style={styles.interpretationHeader}>
+              <View style={styles.interpretationTitle}>
+                <Sparkles color={COLORS.sanskrit} size={20} />
+                <AppText variant="headline" color={COLORS.primary}>
+                  Interpretation
+                </AppText>
+              </View>
+            </View>
+
+            <View style={styles.quoteBlock}>
+              <AppText variant="body">"{translation}"</AppText>
+            </View>
+          </View>
+        </ScrollView>
+
+        <VerticalActions
+          isBookmarked={isBookmarked}
+          isSpeaking={isSpeaking}
+          onToggleBookmark={onToggleBookmark}
+          onShare={onShare}
+          onToggleSpeech={onToggleSpeech}
         />
-
-        <View style={styles.body}>
-          <View style={styles.interpretationHeader}>
-            <View style={styles.interpretationTitle}>
-              <Sparkles color={COLORS.sanskrit} size={20} />
-              <AppText variant="headline" color={COLORS.primary}>
-                Interpretation
-              </AppText>
-            </View>
-            <View style={styles.bodyActions}>
-              <TouchableOpacity onPress={onToggleBookmark} style={styles.actionBtn}>
-                <Bookmark
-                  color={isBookmarked ? COLORS.primary : COLORS.textMuted}
-                  fill={isBookmarked ? COLORS.primary : 'none'}
-                  size={24}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={onShare} style={styles.actionBtn}>
-                <Share2 color={COLORS.textMuted} size={24} />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.quoteBlock}>
-            <AppText variant="body">"{translation}"</AppText>
-          </View>
-
-          {/* {verse.word_meanings ? (
-            <AppText variant="caption" color={COLORS.textMuted} style={styles.wordMeanings}>
-              {verse.word_meanings}
-            </AppText>
-          ) : null} */}
-        </View>
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -104,6 +109,8 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
   const [lang, setLang] = useState<Lang>('en');
   const [verses, setVerses] = useState<Verse[]>([]);
   const [bookmarks, setBookmarks] = useState<Record<string, boolean>>({});
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [isMuted, setIsMuted] = useState(false); // New state for autoplay control
   const [listHeight, setListHeight] = useState(WINDOW_HEIGHT - 200);
 
   const itemHeight = listHeight;
@@ -137,6 +144,37 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
     });
   }, [verseId, isShuffle, chapter]);
 
+  // Initial autoplay for the first verse
+  React.useEffect(() => {
+    if (verses.length > 0 && !isMuted && !speakingId) {
+      startSpeech(verses[0]);
+    }
+  }, [verses, isMuted]);
+
+  // Stop speech when screen is blurred (navigating away)
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        speechService.stop();
+        setSpeakingId(null);
+      };
+    }, [])
+  );
+
+  // Stop speech when app goes to background
+  React.useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      if (nextAppState.match(/inactive|background/)) {
+        speechService.stop();
+        setSpeakingId(null);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   const toggleBookmark = async (verse: Verse) => {
     const isBookmarked = bookmarks[verse.id];
     if (isBookmarked) {
@@ -155,18 +193,54 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
     } catch {}
   };
 
+  const startSpeech = async (verse: Verse) => {
+    setSpeakingId(verse.id);
+    const translation = lang === 'en' ? verse.english_translation : verse.hindi_translation;
+    await speechService.speakVerse(
+      verse.sanskrit,
+      translation,
+      lang,
+      () => setSpeakingId(null)
+    );
+  };
+
+  const toggleSpeech = async (verse: Verse) => {
+    if (!isMuted) {
+      // Mute
+      await speechService.stop();
+      setSpeakingId(null);
+      setIsMuted(true);
+    } else {
+      // Unmute and start current verse
+      setIsMuted(false);
+      await startSpeech(verse);
+    }
+  };
+
   const onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const index = Math.round(event.nativeEvent.contentOffset.y / itemHeight);
-    if (verses[index]) {
-      dbService.addToHistory(verses[index].id);
+    const currentVerse = verses[index];
+    if (currentVerse) {
+      dbService.addToHistory(currentVerse.id);
+      
+      // Handle speech autoplay
+      if (speakingId && speakingId !== currentVerse.id) {
+        speechService.stop();
+        setSpeakingId(null);
+      }
+      
+      if (!isMuted) {
+        startSpeech(currentVerse);
+      }
     }
   };
 
   return (
     <View style={styles.safe}>
+      <AnimatedBackground />
       <SafeAreaView edges={['top']} style={styles.headerContainer}>
         <ScreenHeader
-          title={chapter ? `Chapter ${chapter}` : 'Krishna Uvaach'}
+          title={chapter ? `Chapter ${chapter}` : 'Krishna Uvacha'}
           subtitle={chapterName}
           onBack={() => navigation.goBack()}
           right={
@@ -218,8 +292,10 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
               verse={item}
               lang={lang}
               isBookmarked={!!bookmarks[item.id]}
+              isSpeaking={!isMuted} // Reflect global mute state
               onToggleBookmark={() => toggleBookmark(item)}
               onShare={() => onShare(item)}
+              onToggleSpeech={() => toggleSpeech(item)}
               itemHeight={itemHeight}
             />
           )}
@@ -234,10 +310,8 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   headerContainer: {
-    backgroundColor: COLORS.background,
   },
   listContainer: {
     flex: 1,
@@ -271,6 +345,14 @@ const styles = StyleSheet.create({
   verseItem: {
     width: '100%',
   },
+  verseRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'stretch', // Allow sidebar to fill height for centering
+  },
+  verseScroll: {
+    flex: 1,
+  },
   verseItemContent: {
     paddingBottom: SPACING.xl,
   },
@@ -287,13 +369,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-  },
-  bodyActions: {
-    flexDirection: 'row',
-    gap: SPACING.md,
-  },
-  actionBtn: {
-    padding: 4,
   },
   quoteBlock: {
     borderLeftWidth: 3,

@@ -29,7 +29,7 @@ export const HomeScreen: React.FC = () => {
   return (
     <View style={styles.safe}>
       <SafeAreaView edges={['top']}>
-        <ScreenHeader title="Krishna Uvaach" showStreak streakCount={streak} />
+        <ScreenHeader title="Krishna Uvacha" showStreak streakCount={streak} />
       </SafeAreaView>
 
       <ScrollView

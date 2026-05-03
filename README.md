@@ -1,49 +1,90 @@
-# Krishna Uvaach (कृष्ण उवाच)
+<div align="center">
+  <img src="assets/docs/banner.png" alt="Krishna Uvacha Banner" width="100%">
 
-A premium, fully offline-accessible React Native Expo application for experiencing the divine wisdom of the Bhagavad Gita.
+  # Krishna Uvacha (कृष्ण उवाच)
+  
+  [![Expo](https://img.shields.io/badge/Expo-54-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
+  [![React Native](https://img.shields.io/badge/React_Native-v0.76-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactnative.dev/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![SQLite](https://img.shields.io/badge/SQLite-Offline-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+  [![License](https://img.shields.io/badge/License-MIT-gold?style=for-the-badge)](LICENSE)
 
-## ✨ Features
+  ### *“Man is made by his belief. As he believes, so he is.” — Lord Krishna*
 
-- **Manuscript Aesthetic**: Implements the "Sacred Clarity" design system with Saffron primary colors, Parchment backgrounds, and Charcoal typography.
-- **TikTok-style Feed**: Immersive, full-screen vertical scrolling for discovering verses in a modern, engaging format.
-- **Offline First**: All 700+ verses of the Bhagavad Gita are stored locally in a optimized JSON structure.
-- **Deep Reader**: Detailed view for every shloka including Sanskrit text, transliteration, word-by-word meanings, and English/Hindi translations.
-- **Smart Browsing**: Navigate through all 18 chapters or search for specific keywords like "Karma", "Yoga", or "Bhakti".
-- **Local Persistence**: Save your favorite verses with Bookmarks and track your journey with Reading History, all stored locally using SQLite.
-- **Premium Typography**: Uses Noto Serif, Newsreader, and Inter fonts for a readable and authentic feel.
+  A premium, fully offline-accessible spiritual sanctuary designed for experiencing the divine wisdom of the Bhagavad Gita through a lens of modern "Clinical Luxury."
+</div>
 
-## 🏗️ Architecture
+---
 
-- **Core**: React Native + Expo (SDK 54).
-- **Styling**: Vanilla React Native StyleSheet with design tokens.
-- **Animations**: Moti + React Native Reanimated.
-- **Navigation**: React Navigation (Stack).
-- **Data Layer**: 
-  - `gitaService.ts`: Core data logic for JSON parsing and search.
-  - `dbService.ts`: SQLite service for local state persistence.
-- **Theming**: Centralized design tokens in `src/theme/tokens.ts`.
+## ✨ Core Experience
 
-## 🛠️ Setup & Development
+Krishna Uvacha is not just an app; it's a curated spiritual journey. Every interaction is designed to evoke serenity and clarity.
 
-1. **Install Dependencies**:
+- 💎 **Clinical Luxury Aesthetic**: A sophisticated, high-end design system featuring a minimalist gold-on-deep-space palette and premium serif typography.
+- 📱 **Immersive Feed**: Experience the Gita in a modern, TikTok-inspired vertical feed, making ancient wisdom accessible for the digital age.
+- 📖 **Deep Reader**: Every shloka is presented with its original Sanskrit, transliteration, word-by-word breakdown, and dual-language translations (English & Hindi).
+- 🎙️ **Cultural Recitation**: Integrated high-quality Indian-accented TTS for an authentic listening experience.
+- 🚀 **Offline Sovereignty**: Complete access to all 700+ verses without needing an internet connection.
+- 🔍 **Intelligent Discovery**: Powerful local search to navigate by themes like *Karma*, *Dharma*, or *Yoga*.
+
+---
+
+## 🛠️ Technical Architecture
+
+Built with performance and scalability in mind, the app follows a clean, modular architecture.
+
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Frontend** | React Native + Expo | Cross-platform UI sovereignty |
+| **Logic** | TypeScript | Type-safe business operations |
+| **Animations** | Moti + Reanimated | Fluid, 60fps micro-interactions |
+| **Data** | SQLite + JSON | High-performance local persistence |
+| **Design** | Semantic Tokens | "Clinical Luxury" design system consistency |
+
+### Project Structure
+```bash
+.
+├── src/
+│   ├── components/      # Atomic UI components
+│   ├── screens/         # Page-level containers
+│   ├── services/        # Gita data & SQLite logic
+│   ├── shared/          # Config & types
+│   └── theme/           # Design system tokens
+├── assets/              # Premium branding & icons
+└── web/                 # Companion information portal
+```
+
+---
+
+## 🚀 Setup & Development
+
+Ensure you have [Node.js](https://nodejs.org/) and [Expo CLI](https://docs.expo.dev/get-started/installation/) installed.
+
+1. **Clone & Install**
    ```bash
+   git clone https://github.com/your-repo/krishna-uvacha.git
+   cd krishna-uvacha
    npm install
    ```
 
-2. **Start the App**:
+2. **Start Development**
    ```bash
    npm start
    ```
 
-3. **Platforms**: 
-   - iOS (Simulator or Physical device via Expo Go)
-   - Android (Emulator or Physical device via Expo Go)
-   - Web (Preview)
-
-## 📄 License
-
-This project is built for the dissemination of spiritual wisdom. Content source: Bhagavad Gita JSON dataset.
+3. **Experience**
+   Open the Expo Go app on your [iOS](https://itunes.apple.com/app/apple-store/id982107779) or [Android](https://play.google.com/store/apps/details?id=host.exp.exponent) device and scan the QR code.
 
 ---
 
-*“Man is made by his belief. As he believes, so he is.” — Lord Krishna*
+## 🕊️ Mission & Philosophy
+
+Krishna Uvacha is dedicated to the dissemination of spiritual wisdom in its purest, most aesthetic form. We believe that divine knowledge deserves a premium vessel.
+
+**Content Source:** Bhagavad Gita JSON Dataset.
+
+---
+<div align="center">
+  Built with ❤️ for seekers of wisdom.
+</div>
+
