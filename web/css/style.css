@@ -93,13 +93,21 @@ nav {
 }
 
 .btn-primary {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   background-color: var(--accent-saffron);
   color: white;
   padding: 16px 32px;
   border-radius: 50px;
   font-weight: 600;
   box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+}
+
+.btn-primary svg {
+  width: 24px;
+  height: 24px;
 }
 
 .btn-primary:hover {

@@ -1,4 +1,4 @@
-# Expo / React Native Error Log — Krishna Uvaach
+# Expo / React Native Error Log — Krishna Uvacha
 
 Project stack: **Expo SDK 54 · React Native 0.81.5 · React 19.1.0 · New Architecture enabled**
 
