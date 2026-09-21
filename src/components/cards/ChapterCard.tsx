@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, View } from 'react-native';
 import { AppText } from '../common/AppText';
-import { COLORS, SPACING, ROUNDNESS } from '../../theme/tokens';
+import { COLORS, SPACING, ROUNDNESS, SHADOWS } from '../../theme/tokens';
 import { ChevronRight } from 'lucide-react-native';
 
 interface ChapterCardProps {
@@ -38,8 +38,9 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
     borderRadius: ROUNDNESS.lg,
     marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.outlineVariant,
+    borderWidth: 0,
+    borderColor: 'transparent',
+    ...SHADOWS.sm,
   },
   numberCircle: {
     width: 40,

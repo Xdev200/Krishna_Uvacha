@@ -29,8 +29,8 @@ export const COLORS = {
   textOnPrimary: '#FFFFFF',
   
   // Border & Dividers
-  outline: '#887364',
-  outlineVariant: '#DBC2B0',
+  outline: 'transparent',
+  outlineVariant: 'transparent',
   
   // Gradients
   gradientWarm: '#C9975A',
@@ -129,9 +129,9 @@ export const TYPOGRAPHY = {
   },
   shloka: {
     fontFamily: FONTS.serif,
-    fontSize: 16, // Optimized for couplets as per user request
-    lineHeight: 28,
-    letterSpacing: 0.5,
+    fontSize: 21,
+    lineHeight: 32,
+    letterSpacing: 0.3,
   },
   body: {
     fontFamily: FONTS.secondary,

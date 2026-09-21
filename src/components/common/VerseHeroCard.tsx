@@ -1,68 +1,127 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { GradientView } from './GradientView';
 import { AppText } from './AppText';
-import { COLORS, SPACING, ROUNDNESS, SHADOWS } from '../../theme/tokens';
+import { COLORS, SPACING, ROUNDNESS } from '../../theme/tokens';
 
 interface VerseHeroCardProps {
   sanskrit: string;
   transliteration?: string;
   chapter: number;
   verse: number;
+  isActive?: boolean;
+  isPaused?: boolean;
+  onSanskritComplete?: () => void;
 }
 
-const shouldAddCoupletBreak = (lines: string[], index: number): boolean => {
-  if (lines[index].includes('उवाच')) return true;
-  const hasSpeakerLine = lines[0].includes('उवाच');
-  return hasSpeakerLine ? index > 0 && index % 2 === 0 : index % 2 === 1;
+interface ParsedCouplet {
+  speaker?: string;
+  line1: string;
+  line2: string;
+}
+
+/**
+ * Parses raw Sanskrit into an optional speaker heading and couplet lines.
+ */
+const parseSanskritToCouplet = (raw: string): ParsedCouplet => {
+  const rawLines = raw
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length > 0);
+
+  let speaker: string | undefined;
+  const contentLines: string[] = [];
+
+  for (const line of rawLines) {
+    if (line.includes('उवाच')) {
+      speaker = line;
+    } else {
+      contentLines.push(line);
+    }
+  }
+
+  let line1 = '';
+  let line2 = '';
+
+  if (contentLines.length === 0) {
+    line1 = raw;
+  } else if (contentLines.length === 1) {
+    line1 = contentLines[0];
+  } else if (contentLines.length === 2) {
+    line1 = contentLines[0];
+    line2 = contentLines[1];
+  } else if (contentLines.length === 4) {
+    line1 = `${contentLines[0]} ${contentLines[1]}`;
+    line2 = `${contentLines[2]} ${contentLines[3]}`;
+  } else {
+    const mid = Math.ceil(contentLines.length / 2);
+    line1 = contentLines.slice(0, mid).join(' ');
+    line2 = contentLines.slice(mid).join(' ');
+  }
+
+  return { speaker, line1, line2 };
 };
 
 export const VerseHeroCard: React.FC<VerseHeroCardProps> = ({
   sanskrit,
-  transliteration,
   chapter,
   verse,
+  isActive = true,
+  isPaused = false,
+  onSanskritComplete,
 }) => {
-  const lines = sanskrit.split('\n').filter(l => l.trim().length > 0);
+  const { speaker, line1, line2 } = parseSanskritToCouplet(sanskrit);
+
+  useEffect(() => {
+    if (isActive && onSanskritComplete) {
+      onSanskritComplete();
+    }
+  }, [isActive, sanskrit, onSanskritComplete]);
 
   return (
     <View style={styles.container}>
-      <GradientView
-        style={styles.card}
-        startColor="#FFF9F0"
-        endColor="#E8F5F1"
-        direction="vertical"
-      >
+      <View style={styles.card}>
+        {speaker && (
+          <View style={styles.speakerPill}>
+            <AppText variant="caption" color={COLORS.primary} style={styles.speakerText}>
+              {speaker}
+            </AppText>
+          </View>
+        )}
+
         <View style={styles.sanskritContainer}>
-          {lines.map((line, index) => {
-            const isLast = index === lines.length - 1;
-            const addBreak = shouldAddCoupletBreak(lines, index);
-            return (
-              <AppText
-                key={index}
-                variant="shloka"
-                color={COLORS.sanskrit}
-                centered
-                style={addBreak && !isLast ? styles.coupletBreak : undefined}
-              >
-                {line}
-              </AppText>
-            );
-          })}
+          <AppText
+            variant="shloka"
+            color={COLORS.sanskrit}
+            centered
+            numberOfLines={2}
+            adjustsFontSizeToFit
+            minimumFontScale={0.85}
+            style={styles.coupletLine}
+          >
+            {line1}
+          </AppText>
+
+          {line2 ? (
+            <AppText
+              variant="shloka"
+              color={COLORS.sanskrit}
+              centered
+              numberOfLines={2}
+              adjustsFontSizeToFit
+              minimumFontScale={0.85}
+              style={styles.coupletLine}
+            >
+              {line2}
+            </AppText>
+          ) : null}
         </View>
 
-        {/* {transliteration ? (
-          <AppText variant="label" color={COLORS.textSecondary} centered style={styles.transliteration}>
-            {transliteration}
-          </AppText>
-        ) : null} */}
-
         <View style={styles.pill}>
-          <AppText variant="caption" color={COLORS.textMuted}>
+          <AppText variant="caption" color={COLORS.textSecondary} style={styles.pillText}>
             Chapter {chapter} | Verse {verse}
           </AppText>
         </View>
-      </GradientView>
+      </View>
     </View>
   );
 };
@@ -70,37 +129,63 @@ export const VerseHeroCard: React.FC<VerseHeroCardProps> = ({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: SPACING.md,
-    marginTop: SPACING.sm,
+    marginTop: SPACING.xs,
+    width: '100%',
   },
   card: {
     borderRadius: ROUNDNESS.xl,
-    padding: SPACING.xl,
-    paddingBottom: SPACING.xxl,
-    justifyContent: 'flex-start',
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.xl + 6,
+    justifyContent: 'center',
     alignItems: 'center',
-    overflow: 'hidden',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    borderColor: 'transparent',
+    elevation: 0,
+    shadowOpacity: 0,
+  },
+  speakerPill: {
+    backgroundColor: 'rgba(217, 119, 6, 0.12)',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 3,
+    borderRadius: ROUNDNESS.full,
+    marginBottom: SPACING.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(217, 119, 6, 0.25)',
+  },
+  speakerText: {
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    fontSize: 12,
   },
   sanskritContainer: {
     width: '100%',
     alignItems: 'center',
-    marginTop: SPACING.md,
-    marginBottom: SPACING.sm,
+    justifyContent: 'center',
+    marginTop: SPACING.xs,
+    marginBottom: SPACING.xs,
+    paddingHorizontal: SPACING.xs,
   },
-  coupletBreak: {
-    marginBottom: SPACING.md,
-  },
-  transliteration: {
-    fontStyle: 'italic',
-    maxWidth: '90%',
+  coupletLine: {
+    width: '100%',
+    marginBottom: SPACING.xs,
+    textAlign: 'center',
+    fontSize: 21,
+    lineHeight: 32,
   },
   pill: {
     position: 'absolute',
-    bottom: SPACING.md,
-    right: SPACING.md,
-    backgroundColor: COLORS.surface,
+    bottom: SPACING.xs,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.88)',
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
+    paddingVertical: 3,
     borderRadius: ROUNDNESS.full,
-    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(201, 151, 90, 0.2)',
+  },
+  pillText: {
+    fontWeight: '600',
   },
 });

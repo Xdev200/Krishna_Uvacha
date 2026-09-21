@@ -7,7 +7,7 @@ import { ChapterCard } from '../components/cards/ChapterCard';
 import { VerseListItem } from '../components/cards/VerseListItem';
 import { ScreenWrapper } from '../components/common/ScreenWrapper';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
-import { COLORS, SPACING, ROUNDNESS } from '../theme/tokens';
+import { COLORS, SPACING, ROUNDNESS, SHADOWS } from '../theme/tokens';
 import { useGita } from '../hooks/useGita';
 import { AppNavigation } from '../types/navigation';
 
@@ -103,8 +103,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     height: 48,
     borderRadius: ROUNDNESS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.outlineVariant,
+    borderWidth: 0,
+    borderColor: 'transparent',
+    ...SHADOWS.sm,
   },
   searchInput: {
     flex: 1,

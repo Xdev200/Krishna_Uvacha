@@ -63,9 +63,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   depth: {
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.surfaceVariant,
-    ...SHADOWS.sm,
+    borderBottomWidth: 0,
+    borderBottomColor: 'transparent',
   },
   leftSection: {
     flexDirection: 'row',

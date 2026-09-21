@@ -5,6 +5,8 @@ class SpeechService {
   private hindiVoice: string | undefined;
   private englishVoice: string | undefined;
   private isInitialized: boolean = false;
+  private currentSessionId: number = 0;
+  private interpretationTimeout: NodeJS.Timeout | null = null;
 
   constructor() {
     this.init();
@@ -95,10 +97,20 @@ class SpeechService {
     Speech.speak(cleanText, options);
   }
 
-  async speakVerse(sanskrit: string, interpretation: string, language: 'en' | 'hi', onDone?: () => void) {
+  async speakVerse(
+    sanskrit: string,
+    interpretation: string,
+    language: 'en' | 'hi',
+    onDone?: () => void,
+    callbacks?: {
+      onSanskritStart?: () => void;
+      onInterpretationStart?: () => void;
+    }
+  ) {
     if (!this.isInitialized) await this.init();
     await this.stop();
     
+    const sessionId = ++this.currentSessionId;
     const cleanSanskrit = this.sanitizeText(sanskrit);
     const cleanInterpretation = this.sanitizeText(interpretation);
 
@@ -109,7 +121,10 @@ class SpeechService {
       rate: 0.9, 
       volume: 1.0,
       onDone: () => {
-        setTimeout(() => {
+        if (this.currentSessionId !== sessionId) return;
+        this.interpretationTimeout = setTimeout(() => {
+          if (this.currentSessionId !== sessionId) return;
+          if (callbacks?.onInterpretationStart) callbacks.onInterpretationStart();
           Speech.speak(cleanInterpretation, {
             language: language === 'hi' ? 'hi-IN' : 'en-IN',
             voice: language === 'hi' ? this.hindiVoice : this.englishVoice,
@@ -117,30 +132,69 @@ class SpeechService {
             rate: 1.0,
             volume: 1.0,
             onDone: () => {
+              if (this.currentSessionId !== sessionId) return;
               this.isCurrentlySpeaking = false;
               if (onDone) onDone();
             },
             onError: () => {
+              if (this.currentSessionId !== sessionId) return;
               this.isCurrentlySpeaking = false;
               if (onDone) onDone();
-            }
+            },
+            onStopped: () => {
+              if (this.currentSessionId !== sessionId) return;
+              this.isCurrentlySpeaking = false;
+              if (onDone) onDone();
+            },
           });
-        }, 400);
+        }, 120);
       },
-      onStart: () => { this.isCurrentlySpeaking = true; },
-      onStopped: () => { this.isCurrentlySpeaking = false; if (onDone) onDone(); },
-      onError: () => { this.isCurrentlySpeaking = false; if (onDone) onDone(); }
+      onStart: () => {
+        if (this.currentSessionId !== sessionId) return;
+        this.isCurrentlySpeaking = true;
+        if (callbacks?.onSanskritStart) callbacks.onSanskritStart();
+      },
+      onStopped: () => {
+        if (this.currentSessionId === sessionId) {
+          this.isCurrentlySpeaking = false;
+        }
+      },
+      onError: () => {
+        if (this.currentSessionId === sessionId) {
+          this.isCurrentlySpeaking = false;
+          if (onDone) onDone();
+        }
+      }
     };
 
     Speech.speak(cleanSanskrit, shlokaOptions);
   }
 
   async stop() {
-    const isSpeaking = await Speech.isSpeakingAsync();
-    if (isSpeaking) {
-      await Speech.stop();
+    this.currentSessionId++;
+    if (this.interpretationTimeout) {
+      clearTimeout(this.interpretationTimeout);
+      this.interpretationTimeout = null;
     }
     this.isCurrentlySpeaking = false;
+    try {
+      await Speech.stop();
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * Estimates the total audio duration in ms for Sanskrit + Interpretation
+   */
+  estimateVerseAudioDuration(sanskrit: string, interpretation: string, language: 'en' | 'hi'): number {
+    const cleanSanskrit = this.sanitizeText(sanskrit);
+    const cleanInterpretation = this.sanitizeText(interpretation);
+    const sanskritMs = Math.max(4500, cleanSanskrit.length * 90);
+    const pauseMs = 150;
+    const interpRate = language === 'hi' ? 85 : 105;
+    const interpMs = Math.max(6000, cleanInterpretation.length * interpRate + (language === 'en' ? 2500 : 800));
+    return sanskritMs + pauseMs + interpMs;
   }
 
   isSpeaking() {
