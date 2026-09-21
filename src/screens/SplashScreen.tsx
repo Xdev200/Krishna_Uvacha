@@ -73,7 +73,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
         ]}
       >
         <AppText variant="headline" color={COLORS.primary} centered style={styles.title}>
-          Krishna Uvacha
+          Geeta Saar
         </AppText>
         <AppText variant="label" color={COLORS.tertiary} centered style={styles.subtitle}>
           SACRED CLARITY

@@ -47,7 +47,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             <Flower color={COLORS.primary} size={36} strokeWidth={1.5} />
           </View>
           <AppText variant="display" color={COLORS.primary} centered style={styles.title}>
-            Krishna Uvacha
+            Geeta Saar
           </AppText>
           <AppText variant="caption" color={COLORS.tertiary} centered style={styles.tagline}>
             SACRED CLARITY • BHAGAVAD GITA

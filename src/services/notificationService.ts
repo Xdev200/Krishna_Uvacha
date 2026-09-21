@@ -37,7 +37,7 @@ class NotificationService {
 
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('daily-streak-reminder', {
-        name: 'Daily Streak & Gita Journey Reminders',
+        name: 'Daily Streak & Geeta Saar Reminders',
         importance: Notifications.AndroidImportance.HIGH,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#D97706',
@@ -84,10 +84,10 @@ class NotificationService {
       // Cancel existing reminders first to prevent duplicate notifications
       await this.cancelDailyReminder();
 
-      const title = '🙏 Your Gita Journey Awaits';
+      const title = '🙏 Your Geeta Saar Journey Awaits';
       const body = nextVerseId
         ? `Continue with Chapter ${nextVerseId.split('.')[0]}, Verse ${nextVerseId.split('.')[1]} today.`
-        : 'Take a mindful moment with Lord Krishna’s divine wisdom today.';
+        : 'Take a mindful moment with the sacred wisdom of Geeta Saar today.';
 
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {

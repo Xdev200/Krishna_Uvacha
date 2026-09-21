@@ -1,4 +1,4 @@
-# Krishna_Uvacha - Implementation Plan (WBS)
+# Geeta Saar - Implementation Plan (WBS)
 
 ## Phase 1: Foundation & Setup
 - [x] 1.1 Project structure initialization

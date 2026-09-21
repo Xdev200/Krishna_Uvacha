@@ -428,7 +428,7 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
     try {
       const translation = lang === 'en' ? verse.english_translation : verse.hindi_translation;
       await Share.share({
-        message: `🙏 Read what Krishna says:\n\n"${verse.sanskrit}"\n\n— Bhagavad Gita ${verse.chapter}.${verse.verse}\n\n"${translation}"\n\nDownload Krishna Uvacha: https://play.google.com/store/apps/details?id=com.krishnauvacha`,
+        message: `🙏 Read what Krishna says:\n\n"${verse.sanskrit}"\n\n— Bhagavad Gita ${verse.chapter}.${verse.verse}\n\n"${translation}"\n\nDownload Geeta Saar: https://play.google.com/store/apps/details?id=com.geetasaar.app`,
       });
     } catch {}
   };
@@ -478,7 +478,7 @@ export const ReaderScreen: React.FC<ReaderScreenProps> = ({ route }) => {
       <AnimatedBackground />
       <SafeAreaView edges={['top']} style={styles.headerContainer}>
         <ScreenHeader
-          title={chapter ? `Chapter ${chapter}` : 'Krishna Uvacha'}
+          title={chapter ? `Chapter ${chapter}` : 'Geeta Saar'}
           subtitle={chapterName}
           onBack={() => handleBackOrExit(() => navigation.goBack())}
           right={

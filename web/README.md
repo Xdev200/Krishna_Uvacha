@@ -1,20 +1,20 @@
 <div align="center">
-  <img src="assets/docs/banner.png" alt="Krishna Uvacha Web Portal" width="100%">
+  <img src="assets/docs/banner.png" alt="Geeta Saar Web Portal" width="100%">
 
-  # Krishna Uvacha — Information Portal
+  # Geeta Saar — Information Portal
   
   [![Tech](https://img.shields.io/badge/HTML5-CSS3-orange?style=for-the-badge&logo=html5)](index.html)
   [![Design](https://img.shields.io/badge/Clinical-Luxury-gold?style=for-the-badge)](css/style.css)
   [![Status](https://img.shields.io/badge/Status-Production-success?style=for-the-badge)](index.html)
 
-  ### The official companion gateway for the Krishna Uvacha mobile application.
+  ### The official companion gateway for the Geeta Saar mobile application.
 </div>
 
 ---
 
 ## 🌐 Overview
 
-This portal serves as the primary touchpoint for the Krishna Uvacha mobile ecosystem. It provides critical information for users and ensures compliance with global app store standards.
+This portal serves as the primary touchpoint for the Geeta Saar mobile ecosystem. It provides critical information for users and ensures compliance with global app store standards.
 
 - 💎 **Seamless Branding**: Implements the "Clinical Luxury" design system for a consistent experience from web to mobile.
 - 📜 **Compliance Ready**: Includes official Privacy Policy and Terms of Service.

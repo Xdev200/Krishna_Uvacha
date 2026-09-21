@@ -1,4 +1,4 @@
-# Krishna Uvacha — Code Review
+# Geeta Saar — Code Review
 
 **Reviewed:** 2026-05-02  
 **Branch:** feature/revamp  
@@ -110,7 +110,7 @@ private async getDb(): Promise<SQLite.SQLiteDatabase> {
 **File:** [ReaderScreen.tsx:117,182](../src/screens/ReaderScreen.tsx#L117)
 
 ```typescript
-const headerTitle = chapter ? getChapterName(chapter) : "Krishna Uvacha";  // computed
+const headerTitle = chapter ? getChapterName(chapter) : "Geeta Saar";  // computed
 // ...then later:
 subtitle={chapter ? getChapterName(chapter) : undefined}  // computed again
 ```
