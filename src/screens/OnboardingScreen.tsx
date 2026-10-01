@@ -195,16 +195,22 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderRadius: ROUNDNESS.lg,
     padding: SPACING.md,
-    borderWidth: 0,
+    borderWidth: 2,
     borderColor: 'transparent',
     position: 'relative',
-    ...SHADOWS.sm,
+    // Use shadowColor-based shadow only — no elevation, which causes
+    // Android to draw a grey material halo that looks like a grey border.
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
   },
   optionCardSelected: {
-    borderWidth: 2,
     borderColor: COLORS.primary,
-    backgroundColor: 'rgba(201, 151, 90, 0.08)',
-    ...SHADOWS.sm,
+    backgroundColor: 'rgba(201, 151, 90, 0.07)',
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
   },
   recommendedBadge: {
     position: 'absolute',

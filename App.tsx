@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Platform } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
@@ -36,16 +37,19 @@ export default function App() {
       setIsCheckingOnboarding(false);
     });
 
-    // Listen for notification taps
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const data = response.notification.request.content.data;
-      if (data?.verseId && navigationRef.isReady()) {
-        navigationRef.navigate('Reader', { verseId: data.verseId as string });
-      }
-    });
+    // Listen for notification taps (only supported on native platforms)
+    let subscription: Notifications.Subscription | undefined;
+    if (Platform.OS !== 'web') {
+      subscription = Notifications.addNotificationResponseReceivedListener(response => {
+        const data = response.notification.request.content.data;
+        if (data?.verseId && navigationRef.isReady()) {
+          navigationRef.navigate('Reader', { verseId: data.verseId as string });
+        }
+      });
+    }
 
     return () => {
-      subscription.remove();
+      subscription?.remove();
     };
   }, [navigationRef]);
 
@@ -57,31 +61,29 @@ export default function App() {
     );
   }
 
-  if (showSplash) {
-    return <SplashScreen onFinish={() => setShowSplash(false)} />;
-  }
-
-  if (showOnboarding) {
-    return (
-      <OnboardingScreen
-        onComplete={() => {
-          setShowOnboarding(false);
-        }}
-      />
-    );
-  }
-
   return (
-    <NavigationContainer ref={navigationRef}>
-      <StatusBar style="dark" />
-      <Stack.Navigator id="root" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Journey" component={JourneyScreen} />
-        <Stack.Screen name="Chapters" component={ChapterBrowserScreen} />
-        <Stack.Screen name="Bookmarks" component={BookmarksScreen} />
-        <Stack.Screen name="Reader" component={ReaderScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      {showSplash ? (
+        <SplashScreen onFinish={() => setShowSplash(false)} />
+      ) : showOnboarding ? (
+        <OnboardingScreen
+          onComplete={() => {
+            setShowOnboarding(false);
+          }}
+        />
+      ) : (
+        <NavigationContainer ref={navigationRef}>
+          <StatusBar style="dark" />
+          <Stack.Navigator id="root" screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Journey" component={JourneyScreen} />
+            <Stack.Screen name="Chapters" component={ChapterBrowserScreen} />
+            <Stack.Screen name="Bookmarks" component={BookmarksScreen} />
+            <Stack.Screen name="Reader" component={ReaderScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      )}
+    </SafeAreaProvider>
   );
 }
 
