@@ -165,7 +165,7 @@ export const ReadingGoalCard: React.FC<ReadingGoalCardProps> = ({
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <Target size={18} color={COLORS.primary} />
-          <AppText variant="headline" style={styles.title}>
+          <AppText variant="headline" style={styles.title} numberOfLines={1}>
             {goal.targetDays}-Day Reading Goal
           </AppText>
         </View>
@@ -363,9 +363,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
+    flex: 1,
+    flexShrink: 1,
+    marginRight: SPACING.xs,
   },
   title: {
     fontSize: 15,
+    flexShrink: 1,
   },
   headerRight: {
     flexDirection: 'row',

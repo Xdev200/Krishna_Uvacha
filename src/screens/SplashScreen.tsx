@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, Dimensions, Animated } from 'react-native';
+import { StyleSheet, View, Dimensions, Animated, Platform } from 'react-native';
 import { Flower } from 'lucide-react-native';
 import { AppText } from '../components/common/AppText';
 import { COLORS, SPACING } from '../theme/tokens';
 
 const { height } = Dimensions.get('window');
+const useNativeDriver = Platform.OS !== 'web';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -22,26 +23,26 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
     const timer = setTimeout(onFinish, 2500);
 
     const spinLoop = Animated.loop(
-      Animated.timing(spinValue, { toValue: 1, duration: 1500, useNativeDriver: true })
+      Animated.timing(spinValue, { toValue: 1, duration: 1500, useNativeDriver })
     );
     spinLoop.start();
 
     Animated.parallel([
-      Animated.timing(logoOpacity, { toValue: 1, duration: 1500, useNativeDriver: true }),
-      Animated.timing(logoScale, { toValue: 1, duration: 1500, useNativeDriver: true }),
+      Animated.timing(logoOpacity, { toValue: 1, duration: 1500, useNativeDriver }),
+      Animated.timing(logoScale, { toValue: 1, duration: 1500, useNativeDriver }),
     ]).start();
 
     Animated.sequence([
       Animated.delay(500),
       Animated.parallel([
-        Animated.timing(textOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }),
-        Animated.timing(textTranslateY, { toValue: 0, duration: 1000, useNativeDriver: true }),
+        Animated.timing(textOpacity, { toValue: 1, duration: 1000, useNativeDriver }),
+        Animated.timing(textTranslateY, { toValue: 0, duration: 1000, useNativeDriver }),
       ]),
     ]).start();
 
     Animated.sequence([
       Animated.delay(1500),
-      Animated.timing(footerOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }),
+      Animated.timing(footerOpacity, { toValue: 1, duration: 1000, useNativeDriver }),
     ]).start();
 
     return () => {
