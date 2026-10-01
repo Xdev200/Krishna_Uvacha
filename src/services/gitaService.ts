@@ -53,6 +53,21 @@ class GitaService {
     return this.data.find(v => v.chapter === chapter && v.verse === verse);
   }
 
+  /**
+   * Returns the next verse in sequential order.
+   * Handles chapter transitions (e.g., last verse of Ch.1 → first verse of Ch.2).
+   * Returns undefined if the user has reached the very last verse (18.78).
+   */
+  getNextVerse(chapter: number, verse: number): Verse | undefined {
+    const currentIndex = this.data.findIndex(
+      v => v.chapter === chapter && v.verse === verse
+    );
+    if (currentIndex === -1 || currentIndex >= this.data.length - 1) {
+      return undefined;
+    }
+    return this.data[currentIndex + 1];
+  }
+
   searchVerses(query: string): Verse[] {
     const lowerQuery = query.toLowerCase();
     return this.data.filter(
@@ -68,8 +83,12 @@ class GitaService {
     return CHAPTER_NAMES[chapter] ?? `Chapter ${chapter}`;
   }
 
-  getRandomVerses(count: number = 50): Verse[] {
-    return [...this.data].sort(() => 0.5 - Math.random()).slice(0, count);
+  getTotalVerseCount(): number {
+    return this.data.length;
+  }
+
+  getChapterVerseCount(chapter: number): number {
+    return this.data.filter(v => v.chapter === chapter).length;
   }
 }
 

@@ -3,9 +3,10 @@ import { RouteProp } from '@react-navigation/native';
 
 export type RootStackParamList = {
   Home: undefined;
+  Journey: undefined;
   Chapters: undefined;
   Bookmarks: undefined;
-  Reader: { verseId?: string; isShuffle?: boolean; chapter?: number };
+  Reader: { verseId?: string; chapter?: number };
 };
 
 export type AppNavigation = NativeStackNavigationProp<RootStackParamList>;

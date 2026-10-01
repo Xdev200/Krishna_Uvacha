@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="assets/docs/banner.png" alt="Krishna Uvacha Banner" width="100%">
+  <img src="assets/docs/banner.png" alt="Geeta Saar Banner" width="100%">
 
-  # Krishna Uvacha (कृष्ण उवाच)
+  # Geeta Saar (गीता सार)
   
   [![Expo](https://img.shields.io/badge/Expo-54-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
   [![React Native](https://img.shields.io/badge/React_Native-v0.76-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactnative.dev/)
@@ -18,7 +18,7 @@
 
 ## ✨ Core Experience
 
-Krishna Uvacha is not just an app; it's a curated spiritual journey. Every interaction is designed to evoke serenity and clarity.
+Geeta Saar is not just an app; it's a curated spiritual journey. Every interaction is designed to evoke serenity and clarity.
 
 - 💎 **Clinical Luxury Aesthetic**: A sophisticated, high-end design system featuring a minimalist gold-on-deep-space palette and premium serif typography.
 - 📱 **Immersive Feed**: Experience the Gita in a modern, TikTok-inspired vertical feed, making ancient wisdom accessible for the digital age.
@@ -79,7 +79,7 @@ Ensure you have [Node.js](https://nodejs.org/) and [Expo CLI](https://docs.expo.
 
 ## 🕊️ Mission & Philosophy
 
-Krishna Uvacha is dedicated to the dissemination of spiritual wisdom in its purest, most aesthetic form. We believe that divine knowledge deserves a premium vessel.
+Geeta Saar is dedicated to the dissemination of spiritual wisdom in its purest, most aesthetic form. We believe that divine knowledge deserves a premium vessel.
 
 **Content Source:** Bhagavad Gita JSON Dataset.
 

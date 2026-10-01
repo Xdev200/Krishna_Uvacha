@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Krishna_Uvacha",
-    "slug": "Krishna_Uvacha",
+    "name": "Geeta Saar",
+    "slug": "Geeta_Saar",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,7 +16,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.krishnauvacha.app",
+      "package": "com.geetasaar.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -29,7 +29,8 @@
     "plugins": [
       "expo-asset",
       "expo-font",
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-notifications"
     ],
     "extra": {
       "eas": {

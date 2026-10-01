@@ -2,12 +2,12 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, BookOpen, Bookmark } from 'lucide-react-native';
+import { Home, Compass, BookOpen, Bookmark } from 'lucide-react-native';
 import { AppText } from '../common/AppText';
 import { COLORS, SHADOWS } from '../../theme/tokens';
 import { AppNavigation, RootStackParamList } from '../../types/navigation';
 
-export type TabName = 'Home' | 'Feed' | 'Saved';
+export type TabName = 'Home' | 'Journey' | 'Feed' | 'Saved';
 
 interface TabConfig {
   name: TabName;
@@ -18,9 +18,10 @@ interface TabConfig {
 }
 
 const TABS: TabConfig[] = [
-  { name: 'Home',  label: 'HOME',  screen: 'Home',      Icon: Home },
-  { name: 'Feed',  label: 'FEED',  screen: 'Reader',    Icon: BookOpen, params: { isShuffle: true } },
-  { name: 'Saved', label: 'SAVED', screen: 'Bookmarks', Icon: Bookmark },
+  { name: 'Home',    label: 'HOME',    screen: 'Home',      Icon: Home },
+  { name: 'Journey', label: 'JOURNEY', screen: 'Journey',   Icon: Compass },
+  { name: 'Feed',    label: 'FEED',    screen: 'Reader',    Icon: BookOpen },
+  { name: 'Saved',   label: 'SAVED',   screen: 'Bookmarks', Icon: Bookmark },
 ];
 
 interface BottomTabBarProps {
@@ -58,8 +59,8 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     backgroundColor: COLORS.surface,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.outlineVariant,
+    borderTopWidth: 0,
+    borderTopColor: 'transparent',
     paddingTop: 12,
     position: 'absolute',
     bottom: 0,
